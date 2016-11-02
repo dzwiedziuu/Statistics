@@ -18,7 +18,7 @@ public class PercentileList
 	public PercentileList(double... percentiles)
 	{
 		Percentile[] pList = new Percentile[percentiles.length];
-		for (int i = 0; i < percentiles.length; i++)
+		for(int i = 0; i < percentiles.length; i++)
 			pList[i] = new Percentile(percentiles[i]);
 		this.percentiles = pList;
 		initPercentiles();
@@ -26,24 +26,31 @@ public class PercentileList
 
 	private void initPercentiles()
 	{
-		for (Percentile p : percentiles)
+		for(Percentile p : percentiles)
 			p.floorSortedUnit = sortedList.getFirst();
 	}
 
 	public void add(double value, long weight)
 	{
-		long totalWeight = sortedList.getTotalWeight();
+		SortedUnit unitToAdd = SortedUnit.create(value, weight);
 		SortedUnit removedSortedUnit = sortedList.removeOldestValueIfNecessary();
-		SortedUnit addedSortedUnit = sortedList.addValue(value, weight);
-		for (int i = percentiles.length - 1; i >= 0; i--) // if higher percentile is not updated, then lower is not too
-			if (!percentiles[i].update(removedSortedUnit, addedSortedUnit, totalWeight))
-				break;
+		for(Percentile p : percentiles) // if higher percentile is not updated, then lower is not too
+			p.prepareForAdd(unitToAdd);
+		SortedUnit addedSortedUnit = sortedList.addValue(unitToAdd);
+		for(Percentile p : percentiles)
+		{
+			p.updateActualValue(sortedList.getTotalWeight());
+			p.add(addedSortedUnit);
+		}
 	}
 
+	/*
+		returns percentile value or if percentile is between two values, returns higher
+	*/
 	public Double getPercentileValue(Double d)
 	{
-		for (Percentile p : percentiles)
-			if (p.getValue() == d)
+		for(Percentile p : percentiles)
+			if(p.getValue() == d)
 				return p.getPercentile();
 		throw new RuntimeException("Could not found percentile " + d);
 	}

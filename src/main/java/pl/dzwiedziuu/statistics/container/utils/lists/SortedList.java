@@ -7,6 +7,8 @@ import java.util.TreeMap;
 
 public class SortedList
 {
+	public static final long START_NODE_ID = 0;
+
 	private static final int LIMIT = 5;
 
 	private TreeMap<Double, LinkedList<SortedUnit>> map = new TreeMap<>();
@@ -15,8 +17,7 @@ public class SortedList
 
 	public SortedList()
 	{
-		addValue(new TechnicalSortedUnit(-Double.MAX_VALUE));
-		addValue(new TechnicalSortedUnit(Double.MAX_VALUE));
+		addValue(new TechnicalSortedUnit(START_NODE_ID, -Double.MAX_VALUE));
 		totalWeight = 0L;
 	}
 
@@ -38,7 +39,7 @@ public class SortedList
 	private void putToMap(SortedUnit sortedUnit)
 	{
 		LinkedList<SortedUnit> sul = map.get(sortedUnit.getValue());
-		if (sul == null)
+		if(sul == null)
 		{
 			sul = new LinkedList<>();
 			map.put(sortedUnit.getValue(), sul);
@@ -66,12 +67,12 @@ public class SortedList
 		putToMap(current);
 		SortedUnit next = getGreater(current);
 		current.prev = prev;
-		if (prev != null)
+		if(prev != null)
 		{
 			current.next = prev.next;
 			prev.next = current;
 		}
-		if (next != null)
+		if(next != null)
 		{
 			next.prev = current;
 			current.next = next;
@@ -82,7 +83,7 @@ public class SortedList
 
 	public SortedUnit removeOldestValueIfNecessary()
 	{
-		if (list.size() != LIMIT)
+		if(list.size() != LIMIT)
 			return null;
 		SortedUnit sortedUnit = list.removeFirst();
 		totalWeight -= sortedUnit.getWeight();

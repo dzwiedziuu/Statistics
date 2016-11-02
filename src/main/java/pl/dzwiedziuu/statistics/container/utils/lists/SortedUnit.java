@@ -12,7 +12,12 @@ public class SortedUnit implements Comparable<SortedUnit>
 
 	public static SortedUnit create(double value, long weight)
 	{
-		return new SortedUnit(createNextId(), value, weight);
+		return create(createNextId(), value, weight);
+	}
+
+	public static SortedUnit create(long id, double value, long weight)
+	{
+		return new SortedUnit(id, value, weight);
 	}
 
 	protected synchronized static long createNextId()
@@ -47,9 +52,9 @@ public class SortedUnit implements Comparable<SortedUnit>
 
 	void remove()
 	{
-		if (this.prev != null)
+		if(this.prev != null)
 			this.prev.next = this.next;
-		if (this.next != null)
+		if(this.next != null)
 			this.next.prev = this.prev;
 	}
 
@@ -78,5 +83,10 @@ public class SortedUnit implements Comparable<SortedUnit>
 	public Long getId()
 	{
 		return id;
+	}
+
+	public boolean isTechnical()
+	{
+		return false;
 	}
 }

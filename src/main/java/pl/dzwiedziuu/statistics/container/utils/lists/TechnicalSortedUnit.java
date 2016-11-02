@@ -2,8 +2,14 @@ package pl.dzwiedziuu.statistics.container.utils.lists;
 
 public class TechnicalSortedUnit extends SortedUnit
 {
-	public TechnicalSortedUnit(double value)
+	public TechnicalSortedUnit(long id, double value)
 	{
-		super(createNextId(), value, Long.MAX_VALUE);
+		super(id, value, 0L);
+	}
+
+	@Override
+	public boolean isTechnical()
+	{
+		return true;
 	}
 }

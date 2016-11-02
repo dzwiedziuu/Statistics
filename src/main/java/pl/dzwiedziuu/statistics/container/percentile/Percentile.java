@@ -9,9 +9,10 @@ public class Percentile
 	 * node that holds highest value of totalFloorWeight less than this.totalFloorWeight
 	 */ SortedUnit floorSortedUnit;
 	/*
-	 * value that holds total weight before and exactly in this percentile
+	 * value that holds total weight before in this percentile
 	 */
 	private long totalFloorWeight;
+	private double actualValue;
 
 	public Percentile(double value)
 	{
@@ -28,58 +29,76 @@ public class Percentile
 		return value;
 	}
 
+
 	/*
 	 * returns false if no further percentile should be updated
 	 */
-	public boolean update(SortedUnit removedSortedUnit, SortedUnit addedSortedUnit, long totalWeightBeforeOperation)
+	public void add(SortedUnit addedSortedUnit)
 	{
-		if(removedSortedUnit != null)
-		{
-			totalWeightBeforeOperation -= removedSortedUnit.getWeight();
-			if(this.floorSortedUnit.getValue() >= removedSortedUnit.getValue())
-				moveBackward(value * totalWeightBeforeOperation);
-		}
-		totalWeightBeforeOperation += addedSortedUnit.getWeight();
-		moveForward(value * totalWeightBeforeOperation);
-		return this.floorSortedUnit.getNext().getValue() <= addedSortedUnit.getValue();
+		moveForward();
 	}
 
-	private void moveBackward(double newActualValue)
+
+	public void prepareForAdd(SortedUnit unitToAdd)
 	{
-		if(floorSortedUnit.getPrev() == null)
+		moveCursorBack(unitToAdd.getWeight());
+	}
+
+	void moveCursorBack(long value)
+	{
+		if(floorSortedUnit.isTechnical())
 			return;
-		// if current value is smaller than actualValue - no need to change
-		if(floorSortedUnit.getValue() < newActualValue)
-			return;
-		long newTotalWeight = totalFloorWeight;
-		while(floorSortedUnit.getPrev() != null)
+		while(value >= 0 && !floorSortedUnit.isTechnical())
 		{
+			value -= floorSortedUnit.getWeight();
+			totalFloorWeight -= floorSortedUnit.getWeight();
 			floorSortedUnit = floorSortedUnit.getPrev();
-			newTotalWeight -= floorSortedUnit.getWeight();
-			if(newTotalWeight < newActualValue)
-				break;
 		}
-		totalFloorWeight = newTotalWeight;
 	}
 
-	private void moveForward(double newActualValue)
+	void moveCursorForth(long value)
 	{
-		if(floorSortedUnit.getNext() == null)
-			return;
+		while(value >= 0 && floorSortedUnit.getNext() != null)
+		{
+			value -= floorSortedUnit.getNext().getWeight();
+			totalFloorWeight += floorSortedUnit.getNext().getWeight();
+			floorSortedUnit = floorSortedUnit.getNext();
+		}
+	}
+
+	void moveBackward()
+	{
+		while(floorSortedUnit.getPrev() != null && totalFloorWeight >= actualValue)
+		{
+			totalFloorWeight -= floorSortedUnit.getWeight();
+			floorSortedUnit = floorSortedUnit.getPrev();
+		}
+	}
+
+	void moveForward()
+	{
 		long newTotalWeight = totalFloorWeight;
 		while(floorSortedUnit.getNext() != null)
 		{
 			newTotalWeight += floorSortedUnit.getNext().getWeight();
-			if(newTotalWeight >= newActualValue)
+			if(newTotalWeight >= actualValue)
 				break;
 			totalFloorWeight = newTotalWeight;
 			floorSortedUnit = floorSortedUnit.getNext();
 		}
 	}
 
+	public void updateActualValue(long totalWeightBeforeOperation)
+	{
+		this.actualValue = totalWeightBeforeOperation * value;
+	}
+
+	/*
+			returns percentile value or if percentile is between two values, returns higher
+		 */
 	public Double getPercentile()
 	{
-		return floorSortedUnit.getNext().getValue();
+		return (floorSortedUnit.getNext() != null ? floorSortedUnit.getNext() : floorSortedUnit).getValue();
 	}
 
 	@Override
