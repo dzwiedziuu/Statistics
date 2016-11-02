@@ -56,7 +56,7 @@ public class SortedList
 	private SortedUnit getGreater(SortedUnit sortedUnit)
 	{
 		Entry<Double, LinkedList<SortedUnit>> entry = map.higherEntry(sortedUnit.getValue());
-		return entry != null ? entry.getValue().getLast() : null;
+		return entry != null ? entry.getValue().getFirst() : null;
 	}
 
 	public SortedUnit addValue(SortedUnit current)
