@@ -1,7 +1,7 @@
-package pl.dzwiedziuu.statistics.container.percentile;
+package pl.aniedzwiedz.statistics.container.percentile;
 
-import pl.dzwiedziuu.statistics.container.utils.lists.SortedList;
-import pl.dzwiedziuu.statistics.container.utils.lists.SortedUnit;
+import pl.aniedzwiedz.statistics.container.utils.lists.SortedUnit;
+import pl.aniedzwiedz.statistics.container.utils.lists.SortedList;
 
 public class Percentile implements Comparable<Percentile>
 {

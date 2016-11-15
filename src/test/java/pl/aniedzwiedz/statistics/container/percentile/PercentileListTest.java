@@ -1,4 +1,4 @@
-package pl.dzwiedziuu.statistics.container.percentile;
+package pl.aniedzwiedz.statistics.container.percentile;
 
 import org.junit.Assert;
 import org.junit.Test;

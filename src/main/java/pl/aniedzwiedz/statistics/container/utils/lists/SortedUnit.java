@@ -1,4 +1,4 @@
-package pl.dzwiedziuu.statistics.container.utils.lists;
+package pl.aniedzwiedz.statistics.container.utils.lists;
 
 public class SortedUnit implements Comparable<SortedUnit>
 {
