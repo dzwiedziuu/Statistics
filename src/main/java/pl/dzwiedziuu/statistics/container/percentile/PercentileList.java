@@ -43,9 +43,9 @@ public class PercentileList
 				if (removedSortedUnit.getValue() < p.getPointerValue())
 					p.increaseTotalWeight(-removedSortedUnit.getWeight());
 			}
-			if(unitToAdd.getValue() < p.getPointerValue()) {
-				p.moveCursorBack(unitToAdd.getWeight());
-            }
+//			if(unitToAdd.getValue() < p.getPointerValue()) {
+				p.moveCursorBack(unitToAdd.getWeight() + (removedSortedUnit == null ? 0 : removedSortedUnit.getWeight()));
+//            }
 		}
 		sortedList.addValue(unitToAdd);
 		for(Percentile p : percentiles) {

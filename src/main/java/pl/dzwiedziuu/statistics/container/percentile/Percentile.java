@@ -66,7 +66,7 @@ public class Percentile implements Comparable<Percentile>
 	@Override
 	public String toString()
 	{
-		return "[" + value + ": tWeight=" + totalFloorWeight + ", value=" + getPercentile() + ", floorId=" + pointer.getId() + "]";
+		return "[" + value + ": pointerId=" + pointer.getId() + ", tWeight=" + totalFloorWeight + ", value=" + getPercentile() + ", floorId=" + pointer.getId() + "]";
 	}
 
 	@Override
@@ -79,8 +79,10 @@ public class Percentile implements Comparable<Percentile>
 	}
 
 	public void switchPointerIfRemoved(SortedUnit removedSortedUnit) {
-		if(pointer == removedSortedUnit)
+		if(pointer == removedSortedUnit) {
+			totalFloorWeight -= removedSortedUnit.getWeight();
 			pointer = removedSortedUnit.getPrev();
+		}
 	}
 
 	public double getPointerValue() {
