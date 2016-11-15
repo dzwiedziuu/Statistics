@@ -2,6 +2,7 @@ package pl.dzwiedziuu.statistics.container.utils.lists;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -22,7 +23,7 @@ public class SortedList
 	}
 
 	private static final long START_NODE_ID = 0;
-	private static final int DEFAULT_LIMIT = 10000;
+	public static final int DEFAULT_LIMIT = 10000;
 
 	private TreeMap<Double, LinkedList<SortedUnit>> map = new TreeMap<>();
 	private LinkedList<SortedUnit> list = new LinkedList<>();
@@ -110,6 +111,10 @@ public class SortedList
 		if(list.size() < limit)
 			return null;
 		SortedUnit sortedUnit = list.removeFirst();
+		List<SortedUnit> list = map.get(sortedUnit.getValue());
+		list.remove(sortedUnit);
+		if(list.isEmpty())
+			map.remove(sortedUnit.getValue());
 		totalWeight -= sortedUnit.getWeight();
 		sortedUnit.remove();
 		return sortedUnit;

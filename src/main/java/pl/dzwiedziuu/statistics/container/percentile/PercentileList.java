@@ -10,13 +10,19 @@ import java.util.TreeSet;
 public class PercentileList
 {
 	private Set<Percentile> percentiles = new TreeSet<>();
-	private SortedList sortedList = new SortedList();
+	private SortedList sortedList;
 
 	public PercentileList(double... percentiles)
 	{
-		for(double v : percentiles)
-			addPercentile(v);
+		this(SortedList.DEFAULT_LIMIT, percentiles);
 	}
+
+    public PercentileList(int listSize, double... percentiles)
+    {
+        sortedList = new SortedList(listSize);
+        for(double v : percentiles)
+            addPercentile(v);
+    }
 
 	public void addPercentile(double percentileValue)
 	{

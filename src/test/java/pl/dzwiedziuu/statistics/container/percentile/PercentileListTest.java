@@ -5,9 +5,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 public class PercentileListTest
 {
@@ -193,5 +191,53 @@ public class PercentileListTest
 	{
 		for(int i = 0; i < percentiles.length; i++)
 			Assert.assertEquals("P[" + percentiles[i] + "]", values[i], pList.getPercentileValue(percentiles[i]));
+	}
+
+	private Random random = new Random();
+
+	@Test
+	public void randomTest()
+	{
+		int testLoop = 100;
+		int prepareLoop = 1;
+		int checkLoop = 5;
+		for(int i=0; i<testLoop; i++)
+		{
+			System.out.println("------------------");
+			PercentileList percentileList = new PercentileList(5, 0.5);
+			for(int j=0; j<prepareLoop; j++) {
+				double val = random.nextDouble();
+				long weight = random.nextInt(1000);
+				System.out.println("val: " + val + ", weight: " + weight);
+				percentileList.add(val, weight);
+			}
+			Map<Double, Long> lastValuesMap = new TreeMap<>();
+			Long totalValue = 0L;
+			PercentileList percentileList2 = new PercentileList(5, 0.5);
+			for(int j=0; j<checkLoop; j++) {
+				double val = random.nextDouble();
+				long weight = random.nextInt(1000);
+				System.out.println("val: " + val + ", weight: " + weight);
+				percentileList.add(val, weight);
+				percentileList2.add(val, weight);
+				lastValuesMap.put(val, weight);
+				totalValue += weight;
+			}
+			System.out.println(percentileList);
+			double actValue = ((double) totalValue) / 2;
+			System.out.println("half w: " + actValue);
+			Double foundValue = -1.0;
+			long currTotal = 0;
+			for(Map.Entry<Double, Long> en : lastValuesMap.entrySet())
+			{
+				currTotal += en.getValue();
+				foundValue = en.getKey();
+				System.out.println("iter value: " + en.getKey() + ", curr sum: " + currTotal);
+				if(currTotal >= actValue)
+					break;
+			}
+			Assert.assertEquals("Should be " + foundValue, percentileList2.getPercentileValue(0.5), percentileList.getPercentileValue(0.5));
+			Assert.assertEquals(foundValue, percentileList.getPercentileValue(0.5));
+		}
 	}
 }
