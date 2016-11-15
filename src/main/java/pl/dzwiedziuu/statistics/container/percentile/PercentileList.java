@@ -4,44 +4,35 @@ import pl.dzwiedziuu.statistics.container.utils.lists.SortedList;
 import pl.dzwiedziuu.statistics.container.utils.lists.SortedUnit;
 
 import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class PercentileList
 {
-	private Percentile[] percentiles;
+	private Set<Percentile> percentiles = new TreeSet<>();
 	private SortedList sortedList = new SortedList();
-
-	public PercentileList(Percentile... percentiles)
-	{
-		this.percentiles = percentiles;
-	}
 
 	public PercentileList(double... percentiles)
 	{
-		Percentile[] pList = new Percentile[percentiles.length];
-		for(int i = 0; i < percentiles.length; i++)
-			pList[i] = new Percentile(percentiles[i]);
-		this.percentiles = pList;
-		initPercentiles();
+		for(double v : percentiles)
+			addPercentile(v);
 	}
 
-	private void initPercentiles()
+	public void addPercentile(double percentileValue)
 	{
-		for(Percentile p : percentiles)
-			p.floorSortedUnit = sortedList.getFirst();
+		percentiles.add(new Percentile(sortedList, percentileValue));
 	}
 
 	public void add(double value, long weight)
 	{
 		SortedUnit unitToAdd = SortedUnit.create(value, weight);
 		SortedUnit removedSortedUnit = sortedList.removeOldestValueIfNecessary();
-		for(Percentile p : percentiles) // if higher percentile is not updated, then lower is not too
-			p.prepareForAdd(unitToAdd);
-		SortedUnit addedSortedUnit = sortedList.addValue(unitToAdd);
+		long valueToMoveBack = unitToAdd.getWeight() + (removedSortedUnit == null ? 0 : removedSortedUnit.getWeight());
 		for(Percentile p : percentiles)
-		{
-			p.updateActualValue(sortedList.getTotalWeight());
-			p.add(addedSortedUnit);
-		}
+			p.moveCursorBack(valueToMoveBack);
+		sortedList.addValue(unitToAdd);
+		for(Percentile p : percentiles)
+			p.update();
 	}
 
 	/*
@@ -58,6 +49,6 @@ public class PercentileList
 	@Override
 	public String toString()
 	{
-		return sortedList.toStringSorted() + "\nPercentiles:" + Arrays.toString(Arrays.asList(percentiles).stream().map(s -> "\n\t" + s.toString()).toArray());
+		return "Percentiles:" + Arrays.toString(Arrays.asList(percentiles).stream().map(s -> "\n\t" + s.toString()).toArray()) + "\n" + sortedList.toStringSorted();
 	}
 }

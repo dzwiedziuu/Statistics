@@ -9,7 +9,7 @@ public class SortedList
 {
 	public static final long START_NODE_ID = 0;
 
-	private static final int LIMIT = 5;
+	private static final int LIMIT = 10000;
 
 	private TreeMap<Double, LinkedList<SortedUnit>> map = new TreeMap<>();
 	private LinkedList<SortedUnit> list = new LinkedList<>();
@@ -18,6 +18,7 @@ public class SortedList
 	public SortedList()
 	{
 		addValue(new TechnicalSortedUnit(START_NODE_ID, -Double.MAX_VALUE));
+		list.clear();
 		totalWeight = 0L;
 	}
 
@@ -31,9 +32,9 @@ public class SortedList
 		return totalWeight;
 	}
 
-	public SortedUnit addValue(double value, long weight)
+	public void addValue(double value, long weight)
 	{
-		return addValue(SortedUnit.create(value, weight));
+		addValue(SortedUnit.create(value, weight));
 	}
 
 	private void putToMap(SortedUnit sortedUnit)
@@ -59,7 +60,7 @@ public class SortedList
 		return entry != null ? entry.getValue().getFirst() : null;
 	}
 
-	public SortedUnit addValue(SortedUnit current)
+	public void addValue(SortedUnit current)
 	{
 		// removeOldestValueIfNecessary();
 		totalWeight += current.getWeight();
@@ -78,7 +79,6 @@ public class SortedList
 			current.next = next;
 		}
 		list.addLast(current);
-		return current;
 	}
 
 	public SortedUnit removeOldestValueIfNecessary()

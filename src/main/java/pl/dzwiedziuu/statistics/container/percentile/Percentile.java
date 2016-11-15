@@ -1,9 +1,11 @@
 package pl.dzwiedziuu.statistics.container.percentile;
 
+import pl.dzwiedziuu.statistics.container.utils.lists.SortedList;
 import pl.dzwiedziuu.statistics.container.utils.lists.SortedUnit;
 
-public class Percentile
+public class Percentile implements Comparable<Percentile>
 {
+	private SortedList sortedList;
 	private final double value;
 	/*
 	 * node that holds highest value of totalFloorWeight less than this.totalFloorWeight
@@ -12,36 +14,18 @@ public class Percentile
 	 * value that holds total weight before in this percentile
 	 */
 	private long totalFloorWeight;
-	private double actualValue;
 
-	public Percentile(double value)
+	public Percentile(SortedList sortedList, double value)
 	{
+		this.sortedList = sortedList;
 		this.value = value;
-	}
-
-	public boolean greaterOrEquals(SortedUnit sortedUnit)
-	{
-		return floorSortedUnit.compareTo(sortedUnit) <= 0;
+		this.floorSortedUnit = sortedList.getFirst();
+		update();
 	}
 
 	public double getValue()
 	{
 		return value;
-	}
-
-
-	/*
-	 * returns false if no further percentile should be updated
-	 */
-	public void add(SortedUnit addedSortedUnit)
-	{
-		moveForward();
-	}
-
-
-	public void prepareForAdd(SortedUnit unitToAdd)
-	{
-		moveCursorBack(unitToAdd.getWeight());
 	}
 
 	void moveCursorBack(long value)
@@ -56,27 +40,9 @@ public class Percentile
 		}
 	}
 
-	void moveCursorForth(long value)
+	void update()
 	{
-		while(value >= 0 && floorSortedUnit.getNext() != null)
-		{
-			value -= floorSortedUnit.getNext().getWeight();
-			totalFloorWeight += floorSortedUnit.getNext().getWeight();
-			floorSortedUnit = floorSortedUnit.getNext();
-		}
-	}
-
-	void moveBackward()
-	{
-		while(floorSortedUnit.getPrev() != null && totalFloorWeight >= actualValue)
-		{
-			totalFloorWeight -= floorSortedUnit.getWeight();
-			floorSortedUnit = floorSortedUnit.getPrev();
-		}
-	}
-
-	void moveForward()
-	{
+		double actualValue = sortedList.getTotalWeight() * value;
 		long newTotalWeight = totalFloorWeight;
 		while(floorSortedUnit.getNext() != null)
 		{
@@ -86,11 +52,6 @@ public class Percentile
 			totalFloorWeight = newTotalWeight;
 			floorSortedUnit = floorSortedUnit.getNext();
 		}
-	}
-
-	public void updateActualValue(long totalWeightBeforeOperation)
-	{
-		this.actualValue = totalWeightBeforeOperation * value;
 	}
 
 	/*
@@ -105,5 +66,10 @@ public class Percentile
 	public String toString()
 	{
 		return "[" + value + ": tWeight=" + totalFloorWeight + ", value=" + getPercentile() + ", floorId=" + floorSortedUnit.getId() + "]";
+	}
+
+	@Override
+	public int compareTo(Percentile o) {
+		return Double.compare(this.value, o.value);
 	}
 }
