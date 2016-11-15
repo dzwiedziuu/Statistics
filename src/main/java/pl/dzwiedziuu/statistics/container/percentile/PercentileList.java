@@ -20,6 +20,10 @@ public class PercentileList
 
 	public void addPercentile(double percentileValue)
 	{
+		if(percentileValue == 1.0)
+			return;
+        if(percentileValue < 0 || percentileValue >= 1.0)
+            throw new RuntimeException("Percentile can be only higher or equal to 0 and lower or equal to than 1!");
 		percentiles.add(new Percentile(sortedList, percentileValue));
 	}
 
@@ -27,14 +31,22 @@ public class PercentileList
 	{
 		SortedUnit unitToAdd = SortedUnit.create(value, weight);
 		SortedUnit removedSortedUnit = sortedList.removeOldestValueIfNecessary();
-		long valueToMoveBack = unitToAdd.getWeight() + (removedSortedUnit == null ? 0 : removedSortedUnit.getWeight());
 		for(Percentile p : percentiles) {
-			p.moveCursorBack(valueToMoveBack);
-			p.increaseTotalWeightIfNecessary(unitToAdd);
+			if(removedSortedUnit != null) {
+				p.switchPointerIfRemoved(removedSortedUnit);
+				if (removedSortedUnit.getValue() < p.getPointerValue())
+					p.increaseTotalWeight(-removedSortedUnit.getWeight());
+			}
+			if(unitToAdd.getValue() < p.getPointerValue()) {
+				p.moveCursorBack(unitToAdd.getWeight());
+            }
 		}
 		sortedList.addValue(unitToAdd);
-		for(Percentile p : percentiles)
+		for(Percentile p : percentiles) {
+			if(unitToAdd.getValue() < p.getPointerValue())
+				p.increaseTotalWeight(unitToAdd.getWeight());
 			p.update();
+		}
 	}
 
 	/*
@@ -42,6 +54,8 @@ public class PercentileList
 	*/
 	public Double getPercentileValue(Double d)
 	{
+        if(d == 1.0)
+            return sortedList.getLast().getValue();
 		for(Percentile p : percentiles)
 			if(p.getValue() == d)
 				return p.getPercentile();

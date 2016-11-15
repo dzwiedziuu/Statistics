@@ -10,7 +10,7 @@ public class Percentile implements Comparable<Percentile>
 	/*
 	 * node that holds highest value of totalFloorWeight less than this.totalFloorWeight
 	 */
-	private SortedUnit floorSortedUnit;
+	private SortedUnit pointer;
 	/*
 	 * value that holds total weight before in this percentile
 	 */
@@ -20,7 +20,7 @@ public class Percentile implements Comparable<Percentile>
 	{
 		this.sortedList = sortedList;
 		this.value = value;
-		this.floorSortedUnit = sortedList.getFirst();
+		this.pointer = sortedList.getFirst();
 		update();
 	}
 
@@ -31,13 +31,13 @@ public class Percentile implements Comparable<Percentile>
 
 	void moveCursorBack(long value)
 	{
-		if(floorSortedUnit.isTechnical())
+		if(pointer.isTechnical())
 			return;
-		while(value >= 0 && !floorSortedUnit.isTechnical())
+		while(value >= 0 && !pointer.isTechnical())
 		{
-			value -= floorSortedUnit.getWeight();
-			totalFloorWeight -= floorSortedUnit.getWeight();
-			floorSortedUnit = floorSortedUnit.getPrev();
+			value -= pointer.getWeight();
+			totalFloorWeight -= pointer.getWeight();
+			pointer = pointer.getPrev();
 		}
 	}
 
@@ -45,13 +45,13 @@ public class Percentile implements Comparable<Percentile>
 	{
 		double actualValue = sortedList.getTotalWeight() * value;
 		long newTotalWeight = totalFloorWeight;
-		while(floorSortedUnit.getNext() != null)
+		while(pointer.getNext() != null)
 		{
-			newTotalWeight += floorSortedUnit.getNext().getWeight();
+			newTotalWeight += pointer.getNext().getWeight();
 			if(newTotalWeight >= actualValue)
 				break;
 			totalFloorWeight = newTotalWeight;
-			floorSortedUnit = floorSortedUnit.getNext();
+			pointer = pointer.getNext();
 		}
 	}
 
@@ -60,13 +60,13 @@ public class Percentile implements Comparable<Percentile>
 		 */
 	public Double getPercentile()
 	{
-		return (floorSortedUnit.getNext() != null ? floorSortedUnit.getNext() : floorSortedUnit).getValue();
+		return (pointer.getNext() != null ? pointer.getNext() : pointer).getValue();
 	}
 
 	@Override
 	public String toString()
 	{
-		return "[" + value + ": tWeight=" + totalFloorWeight + ", value=" + getPercentile() + ", floorId=" + floorSortedUnit.getId() + "]";
+		return "[" + value + ": tWeight=" + totalFloorWeight + ", value=" + getPercentile() + ", floorId=" + pointer.getId() + "]";
 	}
 
 	@Override
@@ -74,8 +74,16 @@ public class Percentile implements Comparable<Percentile>
 		return Double.compare(this.value, o.value);
 	}
 
-	public void increaseTotalWeightIfNecessary(SortedUnit unitToAdd) {
-		if(unitToAdd.getValue() < floorSortedUnit.getValue())
-			totalFloorWeight += unitToAdd.getWeight();
+	public void increaseTotalWeight(long weight) {
+        totalFloorWeight += weight;
+	}
+
+	public void switchPointerIfRemoved(SortedUnit removedSortedUnit) {
+		if(pointer == removedSortedUnit)
+			pointer = removedSortedUnit.getPrev();
+	}
+
+	public double getPointerValue() {
+		return pointer.getValue();
 	}
 }
