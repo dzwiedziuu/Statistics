@@ -28,8 +28,10 @@ public class PercentileList
 		SortedUnit unitToAdd = SortedUnit.create(value, weight);
 		SortedUnit removedSortedUnit = sortedList.removeOldestValueIfNecessary();
 		long valueToMoveBack = unitToAdd.getWeight() + (removedSortedUnit == null ? 0 : removedSortedUnit.getWeight());
-		for(Percentile p : percentiles)
+		for(Percentile p : percentiles) {
 			p.moveCursorBack(valueToMoveBack);
+			p.increaseTotalWeightIfNecessary(unitToAdd);
+		}
 		sortedList.addValue(unitToAdd);
 		for(Percentile p : percentiles)
 			p.update();

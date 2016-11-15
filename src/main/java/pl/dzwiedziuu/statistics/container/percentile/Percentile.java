@@ -9,7 +9,8 @@ public class Percentile implements Comparable<Percentile>
 	private final double value;
 	/*
 	 * node that holds highest value of totalFloorWeight less than this.totalFloorWeight
-	 */ SortedUnit floorSortedUnit;
+	 */
+	private SortedUnit floorSortedUnit;
 	/*
 	 * value that holds total weight before in this percentile
 	 */
@@ -71,5 +72,10 @@ public class Percentile implements Comparable<Percentile>
 	@Override
 	public int compareTo(Percentile o) {
 		return Double.compare(this.value, o.value);
+	}
+
+	public void increaseTotalWeightIfNecessary(SortedUnit unitToAdd) {
+		if(unitToAdd.getValue() < floorSortedUnit.getValue())
+			totalFloorWeight += unitToAdd.getWeight();
 	}
 }

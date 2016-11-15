@@ -61,13 +61,13 @@ public class PercentileListTest
 	public void test1()
 	{
 		PercentileList pList = new PercentileList(0.5);
-		Assert.assertEquals(new Double(0), pList.getPercentileValue(0.5));
+		Assert.assertEquals(new Double(-Double.MAX_VALUE), pList.getPercentileValue(0.5));
 		pList.add(10.0, 2L);
 		Assert.assertEquals(new Double(10), pList.getPercentileValue(0.5));
 		pList.add(20.0, 1L);
 		Assert.assertEquals(new Double(10), pList.getPercentileValue(0.5));
 		pList.add(20.0, 1L);
-		Assert.assertEquals(new Double(15), pList.getPercentileValue(0.5));
+		Assert.assertEquals(new Double(10), pList.getPercentileValue(0.5));
 		pList.add(15.0, 2L);
 		Assert.assertEquals(new Double(15), pList.getPercentileValue(0.5));
 		pList.add(30.0, 10L);
@@ -80,8 +80,8 @@ public class PercentileListTest
 		PercentileList pList = new PercentileList(0.1, 0.9);
 		for(int i = 0; i < 100; i++)
 			pList.add(new Double(i), 1L);
-		Assert.assertEquals(new Double(9.5), pList.getPercentileValue(0.1));
-		Assert.assertEquals(new Double(89.5), pList.getPercentileValue(0.9));
+		Assert.assertEquals(new Double(9), pList.getPercentileValue(0.1));
+		Assert.assertEquals(new Double(89), pList.getPercentileValue(0.9));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class PercentileListTest
 			// double d = pList.getPercentileValue(0.5);
 			// System.out.println(d);
 		}
-		Assert.assertEquals(new Double(49.5), pList.getPercentileValue(0.5));
+		Assert.assertEquals(new Double(49.0), pList.getPercentileValue(0.5));
 	}
 
 	@Test
