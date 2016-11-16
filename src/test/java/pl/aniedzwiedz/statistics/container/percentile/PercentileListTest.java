@@ -59,7 +59,7 @@ public class PercentileListTest
 	public void test1()
 	{
 		PercentileList pList = new PercentileList(0.5);
-		Assert.assertEquals(new Double(-Double.MAX_VALUE), pList.getPercentileValue(0.5));
+		Assert.assertNull(pList.getPercentileValue(0.5));
 		pList.add(10.0, 2L);
 		Assert.assertEquals(new Double(10), pList.getPercentileValue(0.5));
 		pList.add(20.0, 1L);
@@ -193,50 +193,50 @@ public class PercentileListTest
 			Assert.assertEquals("P[" + percentiles[i] + "]", values[i], pList.getPercentileValue(percentiles[i]));
 	}
 
-    @Test
+	@Test
 	public void testRemovePointerNode()
-    {
-        PercentileList percentileList = new PercentileList(2, 0.5);
-        percentileList.add(0.3, 93);
-        percentileList.add(0.1, 31);
-        percentileList.add(0.35, 22);
-        System.out.println(percentileList);
-        Assert.assertEquals(new Double(0.1), percentileList.getPercentileValue(0.5));
-    }
+	{
+		PercentileList percentileList = new PercentileList(2, 0.5);
+		percentileList.add(0.3, 93);
+		percentileList.add(0.1, 31);
+		percentileList.add(0.35, 22);
+		System.out.println(percentileList);
+		Assert.assertEquals(new Double(0.1), percentileList.getPercentileValue(0.5));
+	}
 
-    @Test
-    public void testRemovePointerNode2()
-    {
-        PercentileList percentileList = new PercentileList(2, 0.5);
-        percentileList.add(0.0, 33);
-        percentileList.add(0.6, 88);
-        percentileList.add(0.7, 91);
-        System.out.println(percentileList);
-        Assert.assertEquals(new Double(0.7), percentileList.getPercentileValue(0.5));
-    }
+	@Test
+	public void testRemovePointerNode2()
+	{
+		PercentileList percentileList = new PercentileList(2, 0.5);
+		percentileList.add(0.0, 33);
+		percentileList.add(0.6, 88);
+		percentileList.add(0.7, 91);
+		System.out.println(percentileList);
+		Assert.assertEquals(new Double(0.7), percentileList.getPercentileValue(0.5));
+	}
 
-    @Test
-    public void testRemovePointerNode3()
-    {
-        PercentileList percentileList = new PercentileList(2, 0.5);
-        percentileList.add(0.0, 33);
-        percentileList.add(0.6, 88);
-        percentileList.add(0.7, 91);
-        System.out.println(percentileList);
-        Assert.assertEquals(new Double(0.7), percentileList.getPercentileValue(0.5));
-    }
+	@Test
+	public void testRemovePointerNode3()
+	{
+		PercentileList percentileList = new PercentileList(2, 0.5);
+		percentileList.add(0.0, 33);
+		percentileList.add(0.6, 88);
+		percentileList.add(0.7, 91);
+		System.out.println(percentileList);
+		Assert.assertEquals(new Double(0.7), percentileList.getPercentileValue(0.5));
+	}
 
-    @Test
-    public void testRemovePointerNode4()
-    {
-        PercentileList percentileList = new PercentileList(3, 0.5);
-        percentileList.add(0.8, 881);
-        percentileList.add(0.1, 767);
-        percentileList.add(0.4, 105);
-        percentileList.add(0.2, 76);
-        System.out.println(percentileList);
-        Assert.assertEquals(new Double(0.1), percentileList.getPercentileValue(0.5));
-    }
+	@Test
+	public void testRemovePointerNode4()
+	{
+		PercentileList percentileList = new PercentileList(3, 0.5);
+		percentileList.add(0.8, 881);
+		percentileList.add(0.1, 767);
+		percentileList.add(0.4, 105);
+		percentileList.add(0.2, 76);
+		System.out.println(percentileList);
+		Assert.assertEquals(new Double(0.1), percentileList.getPercentileValue(0.5));
+	}
 
 	private Random random = new Random();
 
@@ -246,38 +246,40 @@ public class PercentileListTest
 		int testLoop = 1000;
 		int prepareLoop = 100;
 		int checkLoop = 5;
-		for(int i=0; i<testLoop; i++)
+		for(int i = 0; i < testLoop; i++)
 		{
-//			System.out.println("------------------ executing: " + i);
+			//			System.out.println("------------------ executing: " + i);
 			PercentileList percentileList = new PercentileList(checkLoop, 0.5);
-			for(int j=0; j<prepareLoop; j++) {
+			for(int j = 0; j < prepareLoop; j++)
+			{
 				double val = random.nextDouble();
 				long weight = random.nextInt(1000);
-//				System.out.println("val: " + val + ", weight: " + weight);
+				//				System.out.println("val: " + val + ", weight: " + weight);
 				percentileList.add(val, weight);
 			}
 			Map<Double, Long> lastValuesMap = new TreeMap<>();
 			Long totalValue = 0L;
 			PercentileList percentileList2 = new PercentileList(checkLoop, 0.5);
-			for(int j=0; j<checkLoop; j++) {
+			for(int j = 0; j < checkLoop; j++)
+			{
 				double val = random.nextDouble();
 				long weight = random.nextInt(1000);
-//				System.out.println("val: " + val + ", weight: " + weight);
+				//				System.out.println("val: " + val + ", weight: " + weight);
 				percentileList.add(val, weight);
 				percentileList2.add(val, weight);
 				lastValuesMap.put(val, weight);
 				totalValue += weight;
 			}
-//			System.out.println(percentileList);
+			//			System.out.println(percentileList);
 			double actValue = ((double) totalValue) / 2;
-//			System.out.println("half w: " + actValue);
+			//			System.out.println("half w: " + actValue);
 			Double foundValue = -1.0;
 			long currTotal = 0;
 			for(Map.Entry<Double, Long> en : lastValuesMap.entrySet())
 			{
 				currTotal += en.getValue();
 				foundValue = en.getKey();
-//				System.out.println("iter value: " + en.getKey() + ", curr sum: " + currTotal);
+				//				System.out.println("iter value: " + en.getKey() + ", curr sum: " + currTotal);
 				if(currTotal >= actValue)
 					break;
 			}

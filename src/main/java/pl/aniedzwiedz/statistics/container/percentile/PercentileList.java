@@ -69,6 +69,8 @@ public class PercentileList
 	*/
 	public Double getPercentileValue(Double d)
 	{
+		if(sortedList.isEmpty())
+			return null;
 		if(d == 1.0)
 			return sortedList.getLast().getValue();
 		for(Percentile p : percentiles)
@@ -81,5 +83,10 @@ public class PercentileList
 	public String toString()
 	{
 		return "Percentiles:" + Arrays.toString(Arrays.asList(percentiles).stream().map(s -> "\n\t" + s.toString()).toArray()) + "\n" + sortedList.toStringSorted();
+	}
+
+	public int size()
+	{
+		return sortedList.size();
 	}
 }

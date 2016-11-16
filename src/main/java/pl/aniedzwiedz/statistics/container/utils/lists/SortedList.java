@@ -28,19 +28,24 @@ public class SortedList
 	private TreeMap<Double, LinkedList<SortedUnit>> map = new TreeMap<>();
 	private LinkedList<SortedUnit> list = new LinkedList<>();
 	private long totalWeight;
-    private int limit;
+	private int limit;
 
-    public SortedList()
-    {
-        this(DEFAULT_LIMIT);
-    }
+	public SortedList()
+	{
+		this(DEFAULT_LIMIT);
+	}
 
 	public SortedList(int limit)
 	{
-        this.limit = limit;
+		this.limit = limit;
 		addValue(new TechnicalSortedUnit(START_NODE_ID, -Double.MAX_VALUE));
 		list.clear();
 		totalWeight = 0L;
+	}
+
+	public boolean isEmpty()
+	{
+		return list.isEmpty();
 	}
 
 	public SortedUnit getFirst()
@@ -52,6 +57,7 @@ public class SortedList
 	{
 		return map.lastEntry().getValue().getLast();
 	}
+
 	public long getTotalWeight()
 	{
 		return totalWeight;
@@ -129,5 +135,11 @@ public class SortedList
 	public String toStringSorted()
 	{
 		return "LIST:" + Arrays.toString(list.stream().sorted().map(s -> "\n\t" + s.toString()).toArray());
+	}
+
+
+	public int size()
+	{
+		return list.size() - 1;
 	}
 }
